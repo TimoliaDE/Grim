@@ -81,6 +81,7 @@ public class GrimPlayer implements GrimUser {
     public long lastTransReceived = 0;
     private long playerClockAtLeast = System.nanoTime();
     public double lastWasClimbing = 0;
+    public int reachCount = 0;
     public boolean canSwimHop = false;
     public int riptideSpinAttackTicks = 0;
     public int powderSnowFrozenTicks = 0;
@@ -183,6 +184,7 @@ public class GrimPlayer implements GrimUser {
     public Vector3d bedPosition;
     public long lastBlockPlaceUseItem = 0;
     public AtomicInteger cancelledPackets = new AtomicInteger(0);
+    public Set<UUID> watch = new HashSet<>();
 
     public void onPacketCancel() {
         if (cancelledPackets.incrementAndGet() > spamThreshold) {
@@ -527,6 +529,18 @@ public class GrimPlayer implements GrimUser {
     @Override
     public int getTransactionPing() {
         return GrimMath.floor(transactionPing / 1e6);
+    }
+
+    public boolean isWatched(UUID uuid) {
+        return watch.contains(uuid);
+    }
+
+    public void addWatched(UUID uuid) {
+        watch.add(uuid);
+    }
+
+    public void removeWatched(UUID uuid) {
+        watch.remove(uuid);
     }
 
     @Override

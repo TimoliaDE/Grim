@@ -114,6 +114,11 @@ bukkit {
             description = "Exempt from all checks"
             default = Permission.Default.FALSE
         }
+
+        register("grim.watch") {
+            description = "Watches for range"
+            default = Permission.Default.FALSE
+        }
     }
 
 }

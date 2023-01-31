@@ -32,6 +32,8 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -148,10 +150,43 @@ public class Reach extends Check implements PacketCheck {
 
             if (reachEntity != null) {
                 String result = checkReach(reachEntity, attack.getValue(), false);
-                if (result != null) {
-                    flagAndAlert(result);
+                double reach;
+
+                if (result == null) return;
+
+                try {
+                    reach = Double.parseDouble(result);
+                } catch (NumberFormatException e) {
+                    reach = 100; // -> missed hitbox!
+                }
+
+                for (UUID uuids : player.watch) {
+                    Player uuidPlayer = Bukkit.getPlayer(uuids);
+
+                    if (uuidPlayer == null) {
+                        player.removeWatched(uuids);
+                        continue;
+                    }
+
+                    final String message = "§f<G> // §7" + player.getName() + " §f> §9Reach: " + (reach > 3 ? "§c" : "§f") + result + ", 3.0 §8(VIO: " + player.reachCount + ")";
+
+                    if(reach > 6)
+                        return;
+
+                    if (reach > 3)
+                        player.reachCount++;
+
+
+                    if (reach > 2.8)
+                        uuidPlayer.sendMessage(message);
+
+                    if (player.reachCount % 10 == 0) {
+                        flagAndAlert(result + " blocks");
+                        player.reachCount++;
+                    }
                 }
             }
+
         }
         playerAttackQueue.clear();
     }
@@ -223,9 +258,10 @@ public class Reach extends Check implements PacketCheck {
                 return "Missed hitbox";
             } else if (minDistance > 3) {
                 cancelBuffer = 1;
-                return String.format("%.5f", minDistance) + " blocks";
+                return String.format("%.5f", minDistance);
             } else {
                 cancelBuffer = Math.max(0, cancelBuffer - 0.25);
+                return String.format("%.5f", minDistance);
             }
         }
 
