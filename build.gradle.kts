@@ -22,7 +22,6 @@ repositories {
     maven("https://repo.viaversion.com") // ViaVersion
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
     maven("https://nexus.scarsz.me/content/groups/public") // Configuralize
-    maven("https://clojars.org/repo") // MultiPaper MultiLib
     maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
     maven("https://repo.codemc.io/repository/maven-snapshots/") // PacketEvents
     mavenCentral()
@@ -41,7 +40,6 @@ dependencies {
     implementation("it.unimi.dsi:fastutil:8.5.9")
     implementation("org.jetbrains:annotations:23.1.0") // Why is this needed to compile?
     implementation("github.scarsz:configuralize:1.4.0")
-    implementation("com.github.puregero:multilib:1.1.8")
 
     implementation("com.github.grimanticheat:grimapi:add576ba8b")
     // Used for local testing: implementation("ac.grim.grimac:grimapi:1.0")
@@ -117,6 +115,11 @@ bukkit {
 
         register("grim.watch") {
             description = "Watches for range"
+            default = Permission.Default.FALSE
+        }
+
+        register("grim.test") {
+            description = "Test"
             default = Permission.Default.FALSE
         }
     }

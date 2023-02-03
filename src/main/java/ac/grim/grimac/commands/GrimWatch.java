@@ -20,7 +20,6 @@ public class GrimWatch extends BaseCommand {
         if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
 
-
         if (target == null) {
             player.sendMessage(prefix + "§7Der Spieler ist offline oder existiert nicht.");
             return;
