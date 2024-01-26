@@ -25,7 +25,7 @@ import java.util.LinkedList;
 public class KnockbackHandler extends Check implements PostPredictionCheck {
     Deque<VelocityData> firstBreadMap = new LinkedList<>();
 
-    Deque<VelocityData> lastKnockbackKnownTƒaken = new LinkedList<>();
+    Deque<VelocityData> lastKnockbackKnownTaken = new LinkedList<>();
     VelocityData firstBreadOnlyKnockback = null;
     @Getter
     boolean knockbackPointThree = false;
