@@ -15,6 +15,11 @@ upload-log-start: "%prefix% &fProtokoll hochladen... bitte warten"
 upload-log-not-found: "%prefix% &cDas Protokoll konnte nicht gefunden werden"
 upload-log-upload-failure: "%prefix% &cBeim Hochladen dieses Protokolls ist etwas schiefgelaufen, weitere Informationen finden Sie auf der Konsole"
 
+# Watching-System
+watching-player: "%prefix% &7Du watchest jetzt den Spieler &6%player%"
+unwatching-player: "%prefix% &7Du watchest nciht mehr den Spieler &6%player%"
+watch-alert: "%prefix% &6%player%: &c"
+
 # Gültige Platzhalter:
 # %prefix%
 # %player%

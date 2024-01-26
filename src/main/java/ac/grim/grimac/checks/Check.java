@@ -11,9 +11,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // Class from https://github.com/Tecnio/AntiCheatBase/blob/master/src/main/java/me/tecnio/anticheat/check/Check.java
 @Getter
 public class Check implements AbstractCheck {
+
+    public static Map<String, Check> checkByName = new HashMap<>();
+
     protected final GrimPlayer player;
 
     public double violations;
@@ -46,6 +52,7 @@ public class Check implements AbstractCheck {
         }
 
         reload();
+        checkByName.put(checkName, this);
     }
 
     public boolean shouldModifyPackets() {

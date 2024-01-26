@@ -21,6 +21,7 @@ import ac.grim.grimac.utils.math.GrimMath;
 import ac.grim.grimac.utils.math.TrigHandler;
 import ac.grim.grimac.utils.nmsutil.BlockProperties;
 import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
+import ac.grim.grimac.watcher.WatchSession;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
@@ -188,6 +189,8 @@ public class GrimPlayer implements GrimUser {
     public long lastBlockPlaceUseItem = 0;
     public AtomicInteger cancelledPackets = new AtomicInteger(0);
     public MainSupportingBlockData mainSupportingBlockData = new MainSupportingBlockData(null, false);
+    private WatchSession watchSession;
+
 
     public void onPacketCancel() {
         if (spamThreshold != -1 && cancelledPackets.incrementAndGet() > spamThreshold) {
@@ -682,6 +685,14 @@ public class GrimPlayer implements GrimUser {
     @Override
     public Collection<? extends AbstractCheck> getChecks() {
         return checkManager.allChecks.values();
+    }
+
+    public WatchSession watchSession() {
+        return watchSession;
+    }
+
+    public void watchSession(WatchSession watchSession) {
+        this.watchSession = watchSession;
     }
 
 }

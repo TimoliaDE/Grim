@@ -21,8 +21,8 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.packetentity.PacketEntity;
-import ac.grim.grimac.utils.math.VectorUtils;
 import ac.grim.grimac.utils.nmsutil.ReachUtils;
+import ac.grim.grimac.watcher.WatchSession;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
@@ -220,10 +220,13 @@ public class Reach extends Check implements PacketCheck {
         if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity()) || reachEntity.type == EntityTypes.END_CRYSTAL) {
             if (minDistance == Double.MAX_VALUE) {
                 cancelBuffer = 1;
+                WatchSession.messageToWatchers(player, this, "Missed hitbox");
                 return "Missed hitbox";
             } else if (minDistance > 3) {
                 cancelBuffer = 1;
-                return String.format("%.5f", minDistance) + " blocks";
+                String result = String.format("%.5f", minDistance) + " blocks";
+                WatchSession.messageToWatchers(player, this, result);
+                return result;
             } else {
                 cancelBuffer = Math.max(0, cancelBuffer - 0.25);
             }
