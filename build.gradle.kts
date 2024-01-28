@@ -15,6 +15,38 @@ description = "Libre simulation anticheat designed for 1.20 with 1.8-1.20 suppor
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
+val localEnvFile = File(
+        "${System.getProperties().getProperty("user.home")}${File.separator}.gradle",
+        "env-timolia.local.gradle.kts"
+)
+
+// Check if local env file exists
+if (localEnvFile.exists()) {
+    // Set project extras to local env file
+    apply(from = localEnvFile.path)
+} else {
+    project.extra.set("mavenToken", System.getenv("MAVEN_LIVE_TOKEN") as String)
+    project.extra.set("mavenUser", System.getenv("MAVEN_LIVE_USER") as String)
+    project.extra.set("repository", System.getenv("MAVEN_LIVE_REPO") as String)
+    project.extra.set("mavenUrl", System.getenv("MAVEN_LIVE_URL") as String)
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("${project.extra["mavenUrl"] as String}/${project.extra["repository"] as String}")
+        name = "Reposilite-" + project.extra["mavenUser"] as String
+
+        authentication {
+            create<BasicAuthentication>("basic")
+        }
+        credentials {
+            username = project.extra["mavenUser"] as String
+            password = project.extra["mavenToken"] as String
+        }
+    }
+}
+
 repositories {
     mavenLocal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
@@ -31,6 +63,7 @@ repositories {
 dependencies {
     implementation("com.github.retrooper.packetevents:spigot:2.1.0-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+    implementation("timolia.core:client-redis:git-master")
     implementation("club.minnced:discord-webhooks:0.8.0")
     implementation("it.unimi.dsi:fastutil:8.5.9")
     implementation("org.jetbrains:annotations:23.1.0") // Why is this needed to compile?
@@ -44,72 +77,6 @@ dependencies {
     compileOnly("com.viaversion:viaversion-api:4.1.1")
     compileOnly("io.netty:netty-all:4.1.85.Final")
 }
-
-/*bukkit {
-    name = "GrimAC"
-    author = "GrimAC"
-
-    main = "ac.grim.grimac.GrimAC"
-    apiVersion = "1.13"
-
-    softDepend = listOf(
-        "ProtocolLib",
-        "ProtocolSupport",
-        "ViaVersion",
-        "Essentials",
-        "ViaBackwards",
-        "ViaRewind",
-        "Geyser-Spigot"
-    )
-
-    permissions {
-        register("grim.alerts") {
-            description = "Receive alerts for violations"
-            default = Permission.Default.OP
-        }
-
-        register("grim.alerts.enable-on-join") {
-            description = "Enable alerts on join"
-            default = Permission.Default.OP
-        }
-
-        register("grim.performance") {
-            description = "Check performance metrics"
-            default = Permission.Default.OP
-        }
-
-        register("grim.profile") {
-            description = "Check user profile"
-            default = Permission.Default.OP
-        }
-
-        register("grim.brand") {
-            description = "Show client brands on join"
-            default = Permission.Default.OP
-        }
-
-        register("grim.sendalert") {
-            description = "Send cheater alert"
-            default = Permission.Default.OP
-        }
-
-        register("grim.nosetback") {
-            description = "Disable setback"
-            default = Permission.Default.FALSE
-        }
-
-        register("grim.nomodifypacket") {
-            description = "Disable modifying packets"
-            default = Permission.Default.FALSE
-        }
-
-        register("grim.exempt") {
-            description = "Exempt from all checks"
-            default = Permission.Default.FALSE
-        }
-    }
-
-}*/
 
 tasks.build {
     dependsOn(tasks.shadowJar)
