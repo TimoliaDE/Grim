@@ -11,6 +11,8 @@ import ac.grim.grimac.manager.*;
 import ac.grim.grimac.predictionengine.MovementCheckRunner;
 import ac.grim.grimac.predictionengine.PointThreeEstimator;
 import ac.grim.grimac.predictionengine.UncertaintyHandler;
+import ac.grim.grimac.timolia.GrimAdmin;
+import ac.grim.grimac.timolia.GrimHelper;
 import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.*;
@@ -231,6 +233,12 @@ public class GrimPlayer implements GrimUser {
         packetStateData = new PacketStateData();
 
         uncertaintyHandler.collidingEntities.add(0);
+
+        if (bukkitPlayer.hasPermission("timolia.grim.admin")) {
+            new GrimAdmin(this);
+        } else if (bukkitPlayer.hasPermission("timolia.grim.helper")) {
+            new GrimHelper(this);
+        }
     }
 
     public Set<VectorData> getPossibleVelocities() {

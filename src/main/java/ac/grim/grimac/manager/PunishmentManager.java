@@ -5,9 +5,12 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.events.CommandExecuteEvent;
 import ac.grim.grimac.events.packets.ProxyAlertMessenger;
+import ac.grim.grimac.global.AlertMessage;
+import ac.grim.grimac.global.GlobalAlertManager;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
+import de.timolia.core.redis.TRedis;
 import github.scarsz.configuralize.DynamicConfig;
 import io.github.retrooper.packetevents.util.FoliaCompatUtil;
 import lombok.Getter;
@@ -109,6 +112,8 @@ public class PunishmentManager {
         String alertString = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("alerts-format", "%prefix% &f%player% &bfailed &f%check_name% &f(x&c%vl%&f) &7%verbose%");
         boolean testMode = GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("test-mode", false);
         boolean sentDebug = false;
+
+        TRedis.publish(GlobalAlertManager.CHANNEL, new AlertMessage(alertString));
 
         // Check commands
         for (PunishGroup group : groups) {
