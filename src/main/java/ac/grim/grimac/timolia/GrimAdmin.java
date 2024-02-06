@@ -11,7 +11,7 @@ public class GrimAdmin extends TimoliaTeam {
 
     @Override
     public boolean isHelper() {
-        return false;
+        return true;
     }
 
     @Override

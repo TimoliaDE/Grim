@@ -6,6 +6,7 @@ import ac.grim.grimac.GrimUser;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.TransactionOrder;
+import ac.grim.grimac.commands.GrimGlobal;
 import ac.grim.grimac.events.packets.CheckManagerListener;
 import ac.grim.grimac.manager.*;
 import ac.grim.grimac.predictionengine.MovementCheckRunner;
@@ -41,6 +42,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.*;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketTracker;
+import de.timolia.core.redis.TRedis;
 import io.github.retrooper.packetevents.util.FoliaCompatUtil;
 import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
 import net.kyori.adventure.text.Component;
@@ -192,6 +194,7 @@ public class GrimPlayer implements GrimUser {
     public AtomicInteger cancelledPackets = new AtomicInteger(0);
     public MainSupportingBlockData mainSupportingBlockData = new MainSupportingBlockData(null, false);
     private WatchSession watchSession;
+    public boolean globalAlerts = false;
 
 
     public void onPacketCancel() {
@@ -239,6 +242,15 @@ public class GrimPlayer implements GrimUser {
         } else if (bukkitPlayer.hasPermission("timolia.grim.helper")) {
             new GrimHelper(this);
         }
+
+        globalAlerts = TRedis.execute(jedis -> {
+            String playerKey = GrimGlobal.globalKey + playerUUID;
+            if (!jedis.exists(playerKey)) {
+                return false;
+            }
+
+            return jedis.get(playerKey).equals("active");
+        });
     }
 
     public Set<VectorData> getPossibleVelocities() {

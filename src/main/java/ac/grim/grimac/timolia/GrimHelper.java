@@ -1,7 +1,6 @@
 package ac.grim.grimac.timolia;
 
 import ac.grim.grimac.player.GrimPlayer;
-import org.bukkit.entity.Player;
 
 public class GrimHelper extends TimoliaTeam {
 

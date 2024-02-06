@@ -1,31 +1,31 @@
 package ac.grim.grimac.timolia;
 
 import ac.grim.grimac.player.GrimPlayer;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class TimoliaTeam {
+public abstract class TimoliaTeam implements Listener {
 
-    protected final Player player;
-    protected final GrimPlayer grimPlayer;
+    protected Player player;
+    @Getter public GrimPlayer grimPlayer;
 
-    public static Map<Player, TimoliaTeam> teamMembers = new HashMap<>();
+    public static Map<GrimPlayer, TimoliaTeam> teamMembers = new HashMap<>();
 
     public TimoliaTeam(GrimPlayer grimPlayer) {
         this.grimPlayer = grimPlayer;
         this.player = grimPlayer.bukkitPlayer;
-        teamMembers.put(player, this);
+        teamMembers.put(grimPlayer, this);
     }
 
-    @EventHandler
-    public void onLeave(PlayerQuitEvent event) {
-        teamMembers.remove(player);
-    }
+    public TimoliaTeam() {}
+
 
     protected abstract boolean isHelper();
 
@@ -38,7 +38,7 @@ public abstract class TimoliaTeam {
         return player.hasPermission(getPermission());
     }
 
-    public static Set<Player> members() {
+    public static Set<GrimPlayer> members() {
         return teamMembers.keySet();
     }
 
