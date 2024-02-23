@@ -5,6 +5,7 @@ import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
 import ac.grim.grimac.watcher.WatchSession;
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
@@ -16,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @CommandAlias("grim|grimac")
-public class GrimWatch {
+public class GrimWatch extends BaseCommand {
 
     @Subcommand("watch")
     @CommandPermission("grim.watch")

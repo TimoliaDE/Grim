@@ -32,6 +32,10 @@ permissions:
   grim.sendalert:
     description: Send cheater alert
     default: op
+  grim.global:
+    default: op
+  grim.watch:
+    default: op
 api-version: 1.13
 softdepend:
  - ProtocolLib

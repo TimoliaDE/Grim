@@ -1,5 +1,7 @@
 package ac.grim.grimac;
 
+import de.timolia.core.redis.TRedis;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class GrimAC extends JavaPlugin {
@@ -20,5 +22,8 @@ public final class GrimAC extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         GrimAPI.INSTANCE.start(this);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(GrimAC.INSTANCE, () -> {
+            TRedis.getSubscriptionHandler().run();
+        }, 1);
     }
 }

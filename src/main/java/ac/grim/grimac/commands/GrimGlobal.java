@@ -4,6 +4,7 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.GrimExternalAPI;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.timolia.TimoliaTeam;
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
@@ -16,7 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.concurrent.TimeUnit;
 
 @CommandAlias("grim|grimac")
-public class GrimGlobal implements Listener {
+public class GrimGlobal extends BaseCommand implements Listener {
 
     public static final String globalKey = "grim:global:";
 
