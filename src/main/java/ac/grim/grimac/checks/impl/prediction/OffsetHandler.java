@@ -6,6 +6,7 @@ import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.events.CompletePredictionEvent;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import org.bukkit.Bukkit;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +30,10 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
     }
 
     public void onPredictionComplete(final PredictionComplete predictionComplete) {
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
+            return;
+        }
+
         double offset = predictionComplete.getOffset();
 
         if (!predictionComplete.isChecked()) return;
