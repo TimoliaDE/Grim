@@ -1,6 +1,6 @@
 # La configuración principal de GrimAC
 # Código fuente: https://github.com/MWHunter/Grim
-# Copyright 2022 DefineOutside y contribuyentes, licenciado bajo GPLv3.
+# Copyright 2024 DefineOutside y contribuyentes, licenciado bajo GPLv3.
 # Binarios modificados o plugins con código de Grim deben ser privados o con
 # el código fuente disponible para todos los compradores sin costo adicional.
 
@@ -118,6 +118,10 @@ TimerA:
   # Podría llegar a permitir pasos por alto de fast use/fast heal/fast bow en 1.8 si esta muy alto, 120 ms
   # parece ser un balance bastante decente.
   drift: 120
+  # Ping at which the check will start to limit timer balance, to prevent abuse.
+  # Can cause some setbacks for legitimate players but only if they are over this ping threshold.
+  # -1 to disable
+  ping-abuse-limit-threshold: 1000
 
 NegativeTimer:
   # Number of milliseconds lost while moving before we should start flagging
@@ -152,6 +156,9 @@ Reach:
 
 exploit:
   allow-sprint-jumping-when-using-elytra: true
+  # Esta opción mitiga la colocación del jugador en bloques fantasma resincronizando al jugador cuando ocurre.
+  allow-building-on-ghostblocks: true
+  distance-to-check-if-ghostblocks: 2
 
 # Habilitar el registro de plugins que se han inyectado a netty para intentar resolver problemas de compatibilidad.
 debug-pipeline-on-join: false

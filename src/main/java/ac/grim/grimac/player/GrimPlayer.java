@@ -1,8 +1,8 @@
 package ac.grim.grimac.player;
 
-import ac.grim.grimac.AbstractCheck;
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.GrimUser;
+import ac.grim.grimac.api.AbstractCheck;
+import ac.grim.grimac.api.GrimUser;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.TransactionOrder;
@@ -41,6 +41,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketTracker;
 import io.github.retrooper.packetevents.util.FoliaCompatUtil;
 import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,6 +50,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,7 +69,7 @@ public class GrimPlayer implements GrimUser {
     // Determining player ping
     // The difference between keepalive and transactions is that keepalive is async while transactions are sync
     public final Queue<Pair<Short, Long>> transactionsSent = new ConcurrentLinkedQueue<>();
-    public final List<Short> didWeSendThatTrans = Collections.synchronizedList(new ArrayList<>());
+    public final Set<Short> didWeSendThatTrans = ConcurrentHashMap.newKeySet();
     private final AtomicInteger transactionIDCounter = new AtomicInteger(0);
     public AtomicInteger lastTransactionSent = new AtomicInteger(0);
     public AtomicInteger lastTransactionReceived = new AtomicInteger(0);
@@ -354,10 +356,9 @@ public class GrimPlayer implements GrimUser {
     }
 
     public void sendTransaction(boolean async) {
-        // don't send transactions in configuration phase
-        if (user.getDecoderState() == ConnectionState.CONFIGURATION) return;
+        // don't send transactions outside PLAY phase
         // Sending in non-play corrupts the pipeline, don't waste bandwidth when anticheat disabled
-        if (user.getConnectionState() != ConnectionState.PLAY) return;
+        if (user.getEncoderState() != ConnectionState.PLAY) return;
 
         // Send a packet once every 15 seconds to avoid any memory leaks
         if (disableGrim && (System.nanoTime() - getPlayerClockAtLeast()) > 15e9) {
@@ -367,7 +368,6 @@ public class GrimPlayer implements GrimUser {
         lastTransSent = System.currentTimeMillis();
         short transactionID = (short) (-1 * (transactionIDCounter.getAndIncrement() & 0x7FFF));
         try {
-            addTransactionSend(transactionID);
 
             PacketWrapper<?> packet;
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_17)) {
@@ -377,8 +377,12 @@ public class GrimPlayer implements GrimUser {
             }
 
             if (async) {
-                ChannelHelper.runInEventLoop(user.getChannel(), () -> user.writePacket(packet));
+                ChannelHelper.runInEventLoop(user.getChannel(), () -> {
+                    addTransactionSend(transactionID);
+                    user.writePacket(packet);
+                });
             } else {
+                addTransactionSend(transactionID);
                 user.writePacket(packet);
             }
         } catch (
@@ -404,7 +408,13 @@ public class GrimPlayer implements GrimUser {
     }
 
     public void disconnect(Component reason) {
-        final String textReason = LegacyComponentSerializer.legacySection().serialize(reason);
+        String textReason;
+        if (reason instanceof TranslatableComponent) {
+            TranslatableComponent translatableComponent = (TranslatableComponent) reason;
+            textReason = translatableComponent.key();
+        } else {
+            textReason = LegacyComponentSerializer.legacySection().serialize(reason);
+        }
         LogUtil.info("Disconnecting " + user.getProfile().getName() + " for " + ChatColor.stripColor(textReason));
         try {
             user.sendPacket(new WrapperPlayServerDisconnect(reason));
@@ -527,7 +537,7 @@ public class GrimPlayer implements GrimUser {
     }
 
     public CompensatedInventory getInventory() {
-        return checkManager.getPacketCheck(CompensatedInventory.class);
+        return checkManager.getInventory();
     }
 
     public List<Double> getPossibleEyeHeights() { // We don't return sleeping eye height
